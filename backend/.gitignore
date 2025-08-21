@@ -1,0 +1,6 @@
+node_modules
+./prisma
+/depricated
+/.mdb
+
+/src/app.js

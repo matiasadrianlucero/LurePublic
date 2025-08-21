@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://luredb_ufjm_user:EiMyCp3fmZOGhAnIEpfbHRaAdylgm1Ej@dpg-d2ds9cggjchc73c9mrtg-a.oregon-postgres.render.com/luredb_ufjm"
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  username      String          @unique @db.VarChar(255)
+  email         String          @unique @db.VarChar(255)
+  password      String          @db.VarChar(255)
+  bio           String?         @db.VarChar(255)
+  profilePic    String?         @default("") @db.VarChar(255)
+  backgroundPic String?         @default("") @db.VarChar(255)
+  Post          Post[]
+
+  sending       FollowRequest[] @relation("sending")
+  reciever      FollowRequest[] @relation("reciever")
+
+  notificationReciever Notifications[] @relation("notificationReciever")
+  notificationSender   Notifications[] @relation("notificationSender")
+
+  author        Comment[]
+  LikesRel      Likes[]
+  private        Boolean @default(false)
+  // private Boolean @default(false)
+  // private Boolean @default(false)
+  Favourites    Favourites[]
+}
+
+model Post {
+  id             Int          @id @default(autoincrement())
+  text           String?      @db.VarChar(255)
+  img            String?      @db.VarChar(255)
+  img2           String?      @db.VarChar(255)
+  img3           String?      @db.VarChar(255)
+  tags           String?      @db.VarChar(255)
+  dateOfCreation DateTime     @default(now()) @map("date_of_creation")
+  user           User         @relation(fields: [createdBy], references: [id])
+  createdBy      Int
+  likes          Int         @default(0)
+  commentAmmount Int         @default(0)
+  postedIn       Comment[]
+  LikesRel       Likes[]
+  Favourites     Favourites[]
+}
+
+model FollowRequest {
+  id               Int      @id @default(autoincrement())
+  sendingRelation  User     @relation(name: "sending", fields: [sentById], references: [id])
+  sentById         Int
+  recieverRelation User     @relation(name: "reciever", fields: [sentToId], references: [id])
+  sentToId         Int
+  response         String?  @default("pending") @db.VarChar(255)
+  dateOfCreation   DateTime @default(now()) @map("date_of_creation")
+}
+
+model Comment {
+  id              Int      @id @default(autoincrement())
+  commentRelation User     @relation(fields: [authorId], references: [id])
+  authorId        Int
+  postRelation    Post     @relation(fields: [postId], references: [id])
+  postId          Int
+  response        String   @db.VarChar(255)
+  dateOfCreation  DateTime @default(now()) @map("date_of_creation")
+}
+
+model Likes {
+  id           Int  @id @default(autoincrement())
+  userRelation User @relation(fields: [userId], references: [id])
+  userId       Int
+  postRelation Post @relation(fields: [postId], references: [id])
+  postId       Int
+  state        Boolean  @default(true)
+}
+
+model Favourites {
+  id           Int  @id @default(autoincrement())
+  userRelation User @relation(fields: [userId], references: [id])
+  userId       Int
+  postRelation Post @relation(fields: [postId], references: [id])
+  postId       Int
+  state        Boolean  @default(true)
+}
+model Notifications {
+  id           Int  @id @default(autoincrement())
+  sendingRelation  User     @relation(name: "notificationReciever", fields: [sentById], references: [id])
+  sentById         Int
+  recieverRelation User     @relation(name: "notificationSender", fields: [sentToId], references: [id])
+  sentToId         Int
+  text String @db.VarChar(255)
+}
