@@ -26,3 +26,4 @@ Lure is a social media web app, it allows users to create posts (containing an i
 - Other: Github, pgAdmin4, npm, AWS 3.
 ## Issues
 I initially setup cookies to be delivered through res.cookies but due to hosting backend and frontend on different domains the cookies won't persist, although it is a security risk i stored them in localStorage as a work around until i purchase a domain.
+## Hosted at https://matiaslucescgmail-com-lurefrontend.mdbgo.io
